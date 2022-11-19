@@ -25,6 +25,22 @@ YELLOW_LASER = pygame.image.load(os.path.join("assets", "pixel_laser_yellow.png"
 # Load Background Image
 BG = pygame.transform.scale(pygame.image.load(os.path.join("assets", "background-black.png")), (WIDTH, HEIGHT))
 
+class Ship:
+    def __init__(self, x, y, health=100):
+        self.x = x
+        self.y = y
+        self.health = health
+        self.ship_img = None
+        self.laser_img = None
+        self.lasers = []
+        self.cool_down_counter = 0
+
+    def draw(self, window):
+        pygame.draw.rect(window, (255,0,0), (self.x, self.y, 50, 50))
+        #window.blit(self.ship_img, (self.x, self.y))
+        #for laser in self.lasers:
+            #laser.draw(window)
+       
 def main():
     run = True
     FPS = 60
@@ -32,7 +48,13 @@ def main():
     lives = 5
     main_font = pygame.font.SysFont("comicsans", 50)
     lost_font = pygame.font.SysFont("comicsans", 60)
+
+    player_velocity = 5
+
+    ship = Ship(300, 650)
     
+    #player = Player(300, 630)
+
     clock = pygame.time.Clock()
     
     def redraw_window():
@@ -43,6 +65,8 @@ def main():
 
         WIN.blit(lives_label, (10, 10))
         WIN.blit(level_label, (WIDTH - level_label.get_width() - 10, 10))
+
+        ship.draw(WIN)
         
         pygame.display.update()
 
@@ -53,5 +77,17 @@ def main():
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 run = False
+
+        keys = pygame.key.get_pressed()
+        if keys[pygame.K_a] and player.x - player_velocity > 0: # Left
+             ship.x -= player_velocity
+        if keys[pygame.K_d] and player.x + player_velocity + player.get_width() < WIDTH: # Right
+             ship.x += player_velocity
+        if keys[pygame.K_w] and player.y - player_velocity > 0: # Up
+             ship.y -= player_velocity
+        if keys[pygame.K_s] and player.y + player_velocity + player.get_height() + 15 < HEIGHT: # Down
+             ship.y += player_velocity
+        if keys[pygame.K_SPACE]:
+            player.shoot()
 
 main()
