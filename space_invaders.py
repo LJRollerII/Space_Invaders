@@ -36,24 +36,56 @@ class Ship:
         self.cool_down_counter = 0
 
     def draw(self, window):
-        pygame.draw.rect(window, (255,0,0), (self.x, self.y, 50, 50))
-        #window.blit(self.ship_img, (self.x, self.y))
-        #for laser in self.lasers:
-            #laser.draw(window)
-       
+        window.blit(self.ship_img, (self.x, self.y))
+        for laser in self.lasers:
+            laser.draw(window)
+
+    def get_width(self):
+        return self.ship_img.get_width()
+
+    def get_height(self):
+        return self.ship_img.get_height()
+
+class Player(Ship):
+    def __init__(self, x, y, health=100):
+        super().__init__(x, y, health)
+        self.ship_img = YELLOW_SPACESHIP
+        self.laser_img = YELLOW_LASER
+        self.mask = pygame.mask.from_surface(self.ship_img)
+        self.max_health = health
+
+class Enemy(Ship):
+    COLOR_MAP = {
+                "red": (RED_SPACESHIP, RED_LASER),
+                "green": (GREEN_SPACESHIP, GREEN_LASER),
+                "blue": (BLUE_SPACESHIP, BLUE_LASER)
+                }
+    def __init__(self, x, y, color, health=100):
+        super().__init__(self, x, y, health)
+        self.ship_img, self.laser_img = self.COLOR_MAP[color]
+        self.mask = pygame.mask.from_surface(self.ship_img)
+    
+    def move(self, vel):
+        self.y += vel
+
+        
+
 def main():
     run = True
     FPS = 60
-    level = 1
+    level = 0
     lives = 5
     main_font = pygame.font.SysFont("comicsans", 50)
     lost_font = pygame.font.SysFont("comicsans", 60)
 
-    player_velocity = 5
-
-    ship = Ship(300, 650)
+    enemies = []
+    wave_length = 5
+    enemy_velocity = 1
     
-    #player = Player(300, 630)
+    player_velocity = 5
+    laser_velocity = 1
+
+    player = Player(300, 630)
 
     clock = pygame.time.Clock()
     
@@ -66,7 +98,10 @@ def main():
         WIN.blit(lives_label, (10, 10))
         WIN.blit(level_label, (WIDTH - level_label.get_width() - 10, 10))
 
-        ship.draw(WIN)
+        for enemy in enemies:
+            enemy.draw(WIN)
+        
+        player.draw(WIN)
         
         pygame.display.update()
 
@@ -80,13 +115,13 @@ def main():
 
         keys = pygame.key.get_pressed()
         if keys[pygame.K_a] and player.x - player_velocity > 0: # Left
-             ship.x -= player_velocity
+            player.x -= player_velocity
         if keys[pygame.K_d] and player.x + player_velocity + player.get_width() < WIDTH: # Right
-             ship.x += player_velocity
+            player.x += player_velocity
         if keys[pygame.K_w] and player.y - player_velocity > 0: # Up
-             ship.y -= player_velocity
+            player.y -= player_velocity
         if keys[pygame.K_s] and player.y + player_velocity + player.get_height() + 15 < HEIGHT: # Down
-             ship.y += player_velocity
+            player.y += player_velocity
         if keys[pygame.K_SPACE]:
             player.shoot()
 
