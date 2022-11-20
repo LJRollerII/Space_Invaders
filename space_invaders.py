@@ -3,6 +3,8 @@ import os
 import time
 import random
 pygame.font.init()
+from pygame import mixer
+pygame.mixer.init()
 
 WIDTH, HEIGHT = 750, 750
 WIN = pygame.display.set_mode((WIDTH, HEIGHT))
@@ -24,6 +26,10 @@ YELLOW_LASER = pygame.image.load(os.path.join("assets", "pixel_laser_yellow.png"
 
 # Load Background Image
 BG = pygame.transform.scale(pygame.image.load(os.path.join("assets", "background-black.png")), (WIDTH, HEIGHT))
+
+# Load Background Music
+mixer.music.load('background.wav')
+mixer.music.play(-1)
 
 class Laser:
     def __init__(self, x, y, img):
