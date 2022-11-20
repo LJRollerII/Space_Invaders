@@ -29,7 +29,7 @@ BG = pygame.transform.scale(pygame.image.load(os.path.join("assets", "background
 
 # Load Background Music
 mixer.music.load('background.wav')
-mixer.music.play(-1)
+mixer.music.play(-1) # -1 will keep the background music in a loop
 
 class Laser:
     def __init__(self, x, y, img):
@@ -228,6 +228,8 @@ def main():
             player.y += player_velocity
         if keys[pygame.K_SPACE]:
             player.shoot()
+            laser_sound = mixer.Sound('laser.wav')
+            laser_sound.play()
 
         for enemy in enemies[:]:
             enemy.move(enemy_velocity)
@@ -239,10 +241,12 @@ def main():
             if collide(enemy, player):
                 player.health -= 10
                 enemies.remove(enemy)
+                explosion_sound = mixer.Sound('explosion.wav')
+                explosion_sound.play()
             elif enemy.y + enemy.get_height() > HEIGHT:
                 lives -= 1
                 enemies.remove(enemy)
-        
+       
         player.move_lasers(-laser_velocity, enemies)
 
 def main_menu():
